@@ -1,7 +1,7 @@
 ﻿<Application x:Class="iCodify.UI.Wpf.AeroChromeDemo.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:iCodify.UI.Wpf.AeroChromeDemo"
+             ShutdownMode="OnMainWindowClose"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          

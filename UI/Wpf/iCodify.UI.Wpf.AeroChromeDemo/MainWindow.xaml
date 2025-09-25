@@ -1,12 +1,143 @@
-﻿<Window x:Class="iCodify.UI.Wpf.AeroChromeDemo.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:iCodify.UI.Wpf.AeroChromeDemo"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+﻿<Window
+    x:Class="iCodify.UI.Wpf.AeroChromeDemo.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+    Title="AeroChrome Demo"
+    Width="1080"
+    Height="680"
+    AllowsTransparency="False"
+    Background="{DynamicResource WindowBackgroundBrush}"
+    ResizeMode="CanResize"
+    WindowStyle="None">
+    <Window.Resources>
+        <!--  Fallback-bakgrund om DWM/Aero inte finns  -->
+        <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#1F1F23" />
+        <SolidColorBrush x:Key="TitleForegroundBrush" Color="#FFFFFF" />
+        <Thickness x:Key="TitlePad">8,0,8,0</Thickness>
+        <Style x:Key="TitleBarButton" TargetType="Button">
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Margin" Value="2,0,0,0" />
+            <Setter Property="Foreground" Value="{DynamicResource TitleForegroundBrush}" />
+            <Setter Property="Background" Value="#22FFFFFF" />
+            <Setter Property="BorderBrush" Value="#33FFFFFF" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#33FFFFFF" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#55FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
 
+    <!--  WindowChrome ger resize/snap och gör vår övre rad till "caption"  -->
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome
+            CaptionHeight="0"
+            CornerRadius="0"
+            GlassFrameThickness="0"
+            ResizeBorderThickness="8"
+            UseAeroCaptionButtons="False" />
+    </shell:WindowChrome.WindowChrome>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="36" />
+            <!--  Custom title bar  -->
+            <RowDefinition />
+            <!--  Content  -->
+            <RowDefinition Height="1" />
+            <!--  Tunn linje nederst  -->
+        </Grid.RowDefinitions>
+
+        <!--  Titelrad  -->
+        <Grid Grid.Row="0" Height="36" Background="#22000000">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+
+            <!--  App-ikon  -->
+            <Image
+                Width="16"
+                Height="16"
+                Margin="10,0,6,0"
+                VerticalAlignment="Center"
+                shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                MouseLeftButtonDown="Icon_MouseLeftButtonDown"
+                MouseRightButtonUp="TitleBar_RightClickForSystemMenu"
+                Source="{Binding Icon, RelativeSource={RelativeSource AncestorType=Window}}" />
+
+            <!--  Titel (drag-yta)  -->
+            <TextBlock
+                Grid.Column="1"
+                Padding="{StaticResource TitlePad}"
+                VerticalAlignment="Center"
+                shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                FontWeight="SemiBold"
+                Foreground="{DynamicResource TitleForegroundBrush}"
+                MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
+                MouseRightButtonUp="TitleBar_RightClickForSystemMenu"
+                Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}" />
+
+            <!--  Fönsterknappar  -->
+            <StackPanel
+                Grid.Column="2"
+                Margin="0,0,6,0"
+                VerticalAlignment="Center"
+                shell:WindowChrome.IsHitTestVisibleInChrome="False"
+                Orientation="Horizontal">
+                <Button Click="Minimize_Click" Style="{StaticResource TitleBarButton}">—</Button>
+                <Button
+                    x:Name="MaxRestoreButton"
+                    Click="MaxRestore_Click"
+                    Style="{StaticResource TitleBarButton}">
+                    ▢
+                </Button>
+                <Button
+                    Background="#DDC42B1C"
+                    BorderBrush="#FFC42B1C"
+                    Click="Close_Click"
+                    Style="{StaticResource TitleBarButton}">
+                    ✕
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!--  Innehåll  -->
+        <Border
+            Grid.Row="1"
+            Margin="12"
+            Background="#22FFFFFF"
+            CornerRadius="8">
+            <Grid>
+                <TextBlock
+                    FontSize="16"
+                    Foreground="#E6FFFFFF"
+                    Text="Din app-yta här. Dra i titelraden för att flytta, dubbelklicka för att maximera."
+                    TextWrapping="Wrap" />
+            </Grid>
+        </Border>
+
+        <!--  bottenlinje  -->
+        <Border Grid.Row="2" Background="#33FFFFFF" />
     </Grid>
 </Window>
