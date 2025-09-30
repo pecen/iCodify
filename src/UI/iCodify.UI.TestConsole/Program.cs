@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using iCodify.Core.Extensions;
+using iCodify.Dal;
+using iCodify.Dal.Enums;
+using System.Text;
 using static System.Console;
 
 namespace iCodify.UI.TestConsole
@@ -59,7 +62,7 @@ namespace iCodify.UI.TestConsole
 			WriteLine("1. Set first req here,");
 			WriteLine("2. Set second req here");
 			WriteLine("");
-			WriteLine("- Select DecryptionService command.");
+			WriteLine("- Select which command to execute.");
 			WriteLine("");
 			WriteLine(" 1) Post to Opper Asynchronously.");
 			WriteLine(" 2) Post to Opper Synchronously.");
@@ -72,24 +75,29 @@ namespace iCodify.UI.TestConsole
 
 		private static async Task OpperPostAsync()
 		{
-			WriteLine("\nExecuting...");
+			WriteLine("\nWhat would you like to ask?");
+			var question = ReadLine();
 
-			string apiKey = "op-ESZCBUT1VRVO2F3TGTI8";
-			string jsonBody = "{\"name\": \"respond\", \"input\": \"Please suggest a way to build a biological computer?\"}";
+			var apiData = APIInfo.GetAPIData(APIModels.Opper);
+			string jsonBody = $"{{\"name\": \"respond\", \"input\": \"{question}\"}}";
+
 
 			using var client = new HttpClient
 			{
 				Timeout = TimeSpan.FromSeconds(30)
 			};
 
-			var request = new HttpRequestMessage(HttpMethod.Post, "https://api.opper.ai/v2/call")
+			var request = new HttpRequestMessage(HttpMethod.Post, apiData.Endpoint)
 			{
-				Content = new StringContent(jsonBody, Encoding.UTF8, "application/json")
+				Content = new StringContent(jsonBody, Encoding.UTF8, apiData.MediaType)
 			};
 
-			request.Headers.Add("Authorization", $"Bearer {apiKey}");
+			request.Headers.Add("Authorization", $"Bearer {apiData.APIKey}");
 
 			WriteLine("Sending request...");
+			Thread.Sleep(1000);
+			WriteLine($"Using the {apiData.Model} model - {apiData.Model.GetDescription()}");
+
 			HttpResponseMessage response = await client.SendAsync(request);
 
 			string responseBody = await response.Content.ReadAsStringAsync();
@@ -119,8 +127,8 @@ namespace iCodify.UI.TestConsole
 
 			string responseBody = response.Content.ReadAsStringAsync().Result;
 
-			Console.WriteLine($"Status Code: {(int)response.StatusCode}");
-			Console.WriteLine("Response: " + responseBody);
+			WriteLine($"Status Code: {(int)response.StatusCode}");
+			WriteLine("Response: " + responseBody);
 		}
 
 		private static void ListAssignments()
