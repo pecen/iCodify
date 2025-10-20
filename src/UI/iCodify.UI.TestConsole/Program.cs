@@ -132,11 +132,6 @@ namespace iCodify.UI.TestConsole
 			WriteLine("Response: " + responseBody);
 		}
 
-		private static void ListAssignments()
-		{
-			throw new NotImplementedException();
-		}
-
 		public static void ShowMACAddress()
 		{
 			//var macAddr = NetworkInterface.GetAllNetworkInterfaces()
