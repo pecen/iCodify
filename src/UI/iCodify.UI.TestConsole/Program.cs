@@ -1,6 +1,7 @@
 ﻿using iCodify.Core.Extensions;
 using iCodify.Dal;
 using iCodify.Dal.Enums;
+using System.Net.NetworkInformation;
 using System.Text;
 using static System.Console;
 
@@ -32,7 +33,7 @@ namespace iCodify.UI.TestConsole
 					{
 						case '1': await OpperPostAsync(); break;
 						case '2': OpperPost(); break;
-						case '3': ListAssignments(); break;
+						case '3': ShowMACAddress(); break;
 						case '0': WriteLine(); return;
 
 						default: ShowMenu(); break;
@@ -66,7 +67,7 @@ namespace iCodify.UI.TestConsole
 			WriteLine("");
 			WriteLine(" 1) Post to Opper Asynchronously.");
 			WriteLine(" 2) Post to Opper Synchronously.");
-			WriteLine(" 3) List assignments.");
+			WriteLine(" 3) Show MAC Address.");
 			WriteLine(" 0) Exit");
 
 			WriteLine("");
@@ -134,6 +135,42 @@ namespace iCodify.UI.TestConsole
 		private static void ListAssignments()
 		{
 			throw new NotImplementedException();
+		}
+
+		public static void ShowMACAddress()
+		{
+			//var macAddr = NetworkInterface.GetAllNetworkInterfaces()
+			//              .Where(ni => (ni.OperationalStatus == OperationalStatus.Up
+			//                        && (ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet
+			//                        || ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)))
+			//              .Select(ni => ni.GetPhysicalAddress().ToString())
+			//              .FirstOrDefault();
+
+			//var wifiMacAddr = NetworkInterface.GetAllNetworkInterfaces()
+			//                    .Where(ni => ni.OperationalStatus == OperationalStatus.Up)
+			//                    .SelectMany(ni => ni.GetPhysicalAddress().ToString());
+
+			var interfaces = NetworkInterface.GetAllNetworkInterfaces()
+								.Where(ni => ni.OperationalStatus == OperationalStatus.Up);
+
+			WriteLine($"\n\nThe Ethernet MAC address in use is: {GetFirstMACAddress()}\n");
+
+			WriteLine("The addresses are:\n");
+
+			foreach (var item in interfaces)
+			{
+				WriteLine($"Name: {item.Name}, Type: {item.NetworkInterfaceType}, MAC address: {item.GetPhysicalAddress().ToString()}");
+			}
+		}
+
+		private static string GetFirstMACAddress()
+		{
+			return NetworkInterface.GetAllNetworkInterfaces()
+						  .Where(ni => (ni.OperationalStatus == OperationalStatus.Up
+									&& (ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet
+									|| ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)))
+						  .Select(ni => ni.GetPhysicalAddress().ToString())
+						  .FirstOrDefault() ?? string.Empty;
 		}
 	}
 }
